@@ -23,6 +23,8 @@ class Knight :public Piece {
 public:
 	Knight(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
+	char getSymbol() override;
+
 };
 class Rook :public Piece {
 public:
@@ -41,16 +43,22 @@ class Pawn :public Piece {
 public:
 	Pawn(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
+	char getSymbol() override;
+
 };
 class Queen : public Piece {
 public:
 	Queen(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
+	char getSymbol() override;
+
 };
 class King :public Piece {
 public:
 	King(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
+	char getSymbol() override;
+
 };
 class Board {
 public:
