@@ -13,6 +13,7 @@ class Piece {
 public:
 	Position pos;
 	Color color;
+	int move = 0;
 	Piece(Position pos, Color color);
 	Piece();
 	virtual bool isValidmove(Position to, Board& board) = 0;
@@ -42,7 +43,7 @@ public:
 };
 class Pawn :public Piece {
 public:
-	bool isPromoted;
+	bool isPromoted = false;
 	Pawn(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
