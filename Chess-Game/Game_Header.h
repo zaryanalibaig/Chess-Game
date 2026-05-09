@@ -85,7 +85,7 @@ public:
 	Player* p2;
 	Player* currentPlayer;
 	void start();
-	Position FindKingLocation();
+	Position FindKingLocation(Color color);
 	bool isCheckmate(Color color);
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
