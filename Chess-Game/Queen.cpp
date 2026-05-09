@@ -1,139 +1,68 @@
 #include "Game_Header.h"
-#include<iostream>
-#include<cmath>
-Queen::Queen(Position pos, Color color) : Piece(pos, color)//constructor
+#include <iostream>
+#include <cmath>
+Queen::Queen(Position pos, Color color) : Piece(pos, color)
 {
 
 }
 bool Queen::isValidmove(Position to, Board& board)
 {
-	if (pos.row == to.row && pos.col == to.col)
-	{
-		return false;
-	}
-	//to check if it moves in the same row or column && abs to make the diff +ve 
-	int rowDiff = abs(to.row - pos.row);
-	int colDiff = abs(to.col - pos.col);
-	//now to check whether it moves in the same row or column
-	bool sameRow = (pos.row == to.row);
-	bool sameCol = (pos.col == to.col);
-	bool diagonal = (rowDiff == colDiff);
-	if (!(sameRow || sameCol || diagonal))
-	{
-		return false;
-	}
-	//now checking the valid moves
-	if (sameRow)
-	{
-		if (to.col > pos.col) // moving right
-		{
-			for (int j = pos.col + 1; j < to.col; j++)
-			{
-				if (board.Grid[pos.row][j] != nullptr)
-				{
-					return false;
-				}
-			}
-		}
-		else // moving left
-		{
-			for (int j = pos.col - 1; j > to.col; j--)
-			{
-				if (board.Grid[pos.row][j] != nullptr)
-				{
-					return false;
-				}
-			}
-		}
-	}
-	else if (sameCol)
-	{
-		if (to.row > pos.row) // down
-		{
-			for (int i = pos.row + 1; i < to.row; i++)
-			{
-				if (board.Grid[i][pos.col] != nullptr)
-				{
-					return false;
-				}
-			}
-		}
-		else // up
-		{
-			for (int i = pos.row - 1; i > to.row; i--)
-			{
-				if (board.Grid[i][pos.col] != nullptr)
-				{
-					return false;
-				}
-			}
-		}
-	}
-	else  if (abs(to.row - pos.row) == abs(to.col - pos.col)) // if this diff is not equal it can't move diagonally 
-	{
-		// down-right
-		if (to.row > pos.row && to.col > pos.col)
-		{
-			int i = pos.row + 1;
-			int j = pos.col + 1;
-			while (i < to.row && j < to.col)
-			{
-				if (board.Grid[i][j] != nullptr)
-				{
-					return false;
-				}
-				i++;
-				j++;
-			}
-		}
-		// up-left
-		if (to.row < pos.row && to.col < pos.col)
-		{
-			int i = pos.row - 1;
-			int j = pos.col - 1;
-			while (i > to.row && j > to.col)
-			{
-				if (board.Grid[i][j] != nullptr)
-				{
-					return false;
-				}
-				i--;
-				j--;
-			}
-		}
-		// down-left
-		if (to.row > pos.row && to.col < pos.col)
-		{
-			int i = pos.row + 1;
-			int j = pos.col - 1;
-			while (i < to.row && j > to.col)
-			{
-				if (board.Grid[i][j] != nullptr)
-				{
-					return false;
-				}
-				i++;
-				j--;
-			}
-		}
-		// up-right
-		if (to.row < pos.row && to.col > pos.col)
-		{
-			int i = pos.row - 1;
-			int j = pos.col + 1;
-			while (i > to.row && j < to.col)
-			{
-				if (board.Grid[i][j] != nullptr)
-				{
-					return false;
-				}
-				i--;
-				j++;
-			}
-		}
-	}
+    if (board.Grid[to.row][to.col] != nullptr && board.Grid[to.row][to.col]->color == color)
+    {
+        return false;
+    }
+    if (pos.row == to.row && pos.col == to.col)
+    {
+        return false;
+    }
+    //column difference and row difference to determine how many squares it will move 
+    int rowDiff = to.row - pos.row;
+    int colDiff = to.col - pos.col;
+    //checking whether it will move in the same row or column 
+    bool sameRow = (rowDiff == 0);
+    bool sameCol = (colDiff == 0);
+    //checking whether it will move diagonally 
+    bool diagonal = (abs(rowDiff) == abs(colDiff));
+    if (!(sameRow || sameCol || diagonal))
+    {
+        return false;
+    }
+    // direction of movement
+    int rowStep = 0;
+    int colStep = 0;
+    if (rowDiff > 0)
+    {
+        rowStep = 1;//indicates forward movement 
+    }
+    else if (rowDiff < 0)
+    {
+        rowStep = -1;//indicates backward movement 
+    }
+    if (colDiff > 0)
+    {
+        colStep = 1;//forward 
+    }
+    else if (colDiff < 0)
+    {
+        colStep = -1;//backward 
+    }
+    // start checking from next square
+    int i = pos.row + rowStep;
+    int j = pos.col + colStep;
+    // path checking
+    while (i != to.row || j != to.col)
+    {
+        if (board.Grid[i][j] != nullptr)
+        {
+            return false;
+        }
+        i += rowStep;
+        j += colStep;
+    }
+    return true;
 }
+
 char Queen::getSymbol()
 {
-	return 'Q';
+    return 'Q';
 }
