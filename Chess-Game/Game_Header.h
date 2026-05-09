@@ -68,8 +68,8 @@ public:
 	Piece* Grid[8][8];
 	Board();
 	bool makeMove();
-	Piece* Getpiece();
-	void highlightmove();
+	Piece* Getpiece(Position);
+	void highlightmove(Position);
 	void display();
 };
 class Player {
