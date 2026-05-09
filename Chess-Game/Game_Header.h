@@ -13,6 +13,7 @@ class Piece {
 public:
 	Position pos;
 	Color color;
+	bool isMoved = false;
 	int move = 0;
 	Piece(Position pos, Color color);
 	Piece();
@@ -29,7 +30,7 @@ public:
 };
 class Rook :public Piece {
 public:
-	bool rookMoved;
+	bool rookMoved = false;
 	Rook(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -58,7 +59,7 @@ public:
 };
 class King :public Piece {
 public:
-	bool kingMoved;
+	
 	King(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -68,7 +69,6 @@ class Board {
 public:
 	Piece* Grid[8][8];
 	Board();
-	bool makeMove();
 	Piece* Getpiece();
 	void highlightmove();
 	void display();
@@ -88,6 +88,8 @@ public:
 	void start();
 	Position FindKingLocation();
 	bool isCheckmate(Color color);
+	bool makeMove(Position to, Board& board);
+	bool castling(Position to, Board& board);
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
 	void switchTurn();
