@@ -67,7 +67,7 @@ class Board {
 public:
 	Piece* Grid[8][8];
 	Board();
-	bool makeMove();
+	bool makeMove(Position to,Position from);
 	Piece* Getpiece(Position);
 	void highlightmove(Position);
 	void display();
