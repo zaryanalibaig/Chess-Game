@@ -1,23 +1,15 @@
 #include"Game_Header.h"
 #include<iostream>
-bool Game::isinCheck(Color color)
-{
-	//checking the king whether it is in check or not 
-	Position P = Game::FindKingLocation(color);
-	for (int i = 0; i <= 7; i++)
-	{
-		for (int j = 0; j <= 7; j++)
-		{
-			if (board.Grid[i][j] != nullptr)
-			{
-				if (board.Grid[i][j]->color != color && board.Grid[i][j]->isValidmove(P, board))
-				{
-					return true;
 #include<cstring>
+
+//Player Class Constructor
 Player::Player(string name, Color color) {
 	this->name = name;
 	this->color = color;
 }
+//Game Class Implementation
+
+//Constructor
 Game::Game() {
 	string name;
 	cout << "Enter the Name for Player with White pieces : " << endl;
@@ -29,45 +21,74 @@ Game::Game() {
 	currentPlayer = p1;
 
 }
+
+//Destructor
+Game::~Game()
+{
+	delete p1;
+	delete p2;
+	delete currentPlayer;
+}
+
+//Strt Function - Starts Game
 void Game::start() {
 	Position to, from;
 	char arr[3],arr1[3];
-	while (true) {
+	//For Gameplay - Till Checkmate
+	while (true)
+	{
 		board.display();
 		cout << "Select the piece to move (in the classical form like e4): ";
 		cin.getline(arr,2);
+
+		//Conversion of Column(Alphabet) to respected integer 
 		arr[0] = tolower(arr[0]);
 		arr[0] = arr[0] - 48;
-		while (arr[0] > 7 || arr[2]>7) {
+		//Validation
+		while (arr[0] > 7 || arr[2]>7)
+		{
 			cout << "Enter again : ";
 			cin.getline(arr, 2);
 			arr[0] = arr[0] - 'a';
 		}
+
 		from.col = arr[0]-'a';
 		from.row = arr[1]-1;
+		//Displays '*' on path of a Piece
 		board.highlightmove(from);
+
 		cout << "Select the destination (in the classical form like e4): ";
 		cin.getline(arr1, 2);
 		
+		//Conversion of Column(Alphabet) to respected integer 
 		arr1[0] = tolower(arr1[0]);
 		arr1[0] = arr1[0] - 'a';
-		while (arr1[0] > 7 || arr1[2] > 7) {
+		//Validation
+		while (arr1[0] > 7 || arr1[2] > 7)
+		{
 			cout << "Enter again : ";
 			cin.getline(arr1, 2);
 			arr1[0] = arr1[0] - 'a';
 		}
+
 		to.col = arr1[0];
 		to.row = arr1[1] - 1;
+
 		bool a = board.makeMove(to, from);
-		if (a) {
-			if (isinCheck(currentPlayer->color)) {
+
+		//Swith Turn
+		if (a)
+		{
+			if (isinCheck(currentPlayer->color))
+			{
 				cout << "Your king will be exposed \n";
 				continue;
 			}
 			else 
 			{
 				switchTurn();
-				if (isCheckmate(currentPlayer->color)) {
+				if (isCheckmate(currentPlayer->color))
+				{
 					cout << currentPlayer->name << " lost \n";
 					break;
 				}
@@ -75,6 +96,28 @@ void Game::start() {
 		}
 	}
 }
+
+//Check Function - Whether King is in Check or not
+bool Game::isinCheck(Color color)
+{
+	Position P = Game::FindKingLocation(color);
+	for (int i = 0; i <= 7; i++)
+	{
+		for (int j = 0; j <= 7; j++)
+		{
+			if (board.Grid[i][j] != nullptr)
+			{
+				if (board.Grid[i][j]->color != color &&
+					board.Grid[i][j]->isValidmove(P, board))
+				{
+					return true;
+				}
+			}
+		}
+	}
+}
+
+//Switch Function - To Swith Turn between Players
 void Game::switchTurn() {
 	if (currentPlayer == p1) {
 		currentPlayer = p2;
@@ -82,6 +125,8 @@ void Game::switchTurn() {
 	else
 		currentPlayer = p1;
 }
+
+//Checkmate Function - Checks Whether it is Checkmate or not
 bool Game::isCheckmate(Color color) {
 	if (!canEscape(color) && isinCheck(color)) {
 		return true;
@@ -89,6 +134,8 @@ bool Game::isCheckmate(Color color) {
 	else
 		return false;
 }
+
+//Escape Function - Checks Whether King can Escape from Check or not
 bool Game::canEscape(Color color) {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -129,6 +176,8 @@ bool Game::canEscape(Color color) {
 	}
 	return false;
 }
+
+//Finds King Location on the board
 Position Game::FindKingLocation(Color color)
 {
 	for (int i = 0; i <= 7; i++)
@@ -137,7 +186,8 @@ Position Game::FindKingLocation(Color color)
 		{
 			if (board.Grid[i][j] != nullptr)
 			{
-				if (board.Grid[i][j]->getSymbol() == 'K' && board.Grid[i][j]->color == color)
+				if (board.Grid[i][j]->getSymbol() == 'K' &&
+					board.Grid[i][j]->color == color)
 				{
 					return { i, j };
 				}
@@ -147,7 +197,7 @@ Position Game::FindKingLocation(Color color)
 	return { -1,-1 };
 }
 
-
+//Castling - A special move to secure King and active Rook
 bool Game::castling(Position to)
 {
 	if (isinCheck(White) || isinCheck(Black))
@@ -327,6 +377,7 @@ bool Game::castling(Position to)
 	}
 }
 
+//Check Whether this move can be made or not
 bool Game::makeMove(Position to,Position from)
 {
 	Piece* piece = board.Getpiece(from);
