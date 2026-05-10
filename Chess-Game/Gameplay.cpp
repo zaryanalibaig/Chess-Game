@@ -1,7 +1,7 @@
 #include"Game_Header.h"
 #include<iostream>
 
-bool Game::castling(Position to, Board& board)
+bool Game::castling(Position to)
 {
 	if (isinCheck(White) || isinCheck(Black))
 	{
@@ -45,6 +45,13 @@ bool Game::castling(Position to, Board& board)
 						}
 					}
 				}
+				//King Movement
+				board.Grid[0][to.col] = board.Grid[0][4];
+				//Rook Movement
+				board.Grid[0][3] = board.Grid[0][0];
+
+				board.Grid[0][4] = nullptr;
+				board.Grid[0][0] = nullptr;
 				return true;
 			}
 			else				//King Side Castling
@@ -74,6 +81,13 @@ bool Game::castling(Position to, Board& board)
 						}
 					}
 				}
+				//King Movement
+				board.Grid[0][to.col] = board.Grid[0][4];
+				//Rook Movement
+				board.Grid[0][5] = board.Grid[0][0];
+
+				board.Grid[0][4] = nullptr;
+				board.Grid[0][0] = nullptr;
 				return true;
 			}
 		}
@@ -116,6 +130,13 @@ bool Game::castling(Position to, Board& board)
 							}
 						}
 					}
+					//King Movement
+					board.Grid[7][to.col] = board.Grid[0][4];
+					//Rook Movement
+					board.Grid[7][3] = board.Grid[0][0];
+
+					board.Grid[7][4] = nullptr;
+					board.Grid[7][0] = nullptr;
 					return true;
 				}
 				else                 // King Side Castling
@@ -145,9 +166,44 @@ bool Game::castling(Position to, Board& board)
 							}
 						}
 					}
+					//King Movement
+					board.Grid[7][to.col] = board.Grid[0][4];
+					//Rook Movement
+					board.Grid[7][5] = board.Grid[0][0];
+
+					board.Grid[7][4] = nullptr;
+					board.Grid[7][0] = nullptr;
 					return true;
 				}
 			}
 		}
+	}
+}
+
+bool Game::makeMove(Position to,Position from)
+{
+	Piece* piece = board.Getpiece(from);
+	if (castling(to))
+	{
+		return true;
+	}
+	else if (piece->isValidmove(to, board))
+	{
+		if (board.Grid[to.row][to.col] == nullptr)
+		{
+			board.Grid[to.row][to.col] = board.Grid[from.row][from.col];
+			board.Grid[from.row][from.col] = nullptr;
+		}
+		else
+		{
+			delete board.Grid[to.row][to.col];
+			board.Grid[to.row][to.col] = board.Grid[from.row][from.col];
+			delete board.Grid[from.row][from.col];
+		}
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

@@ -69,7 +69,7 @@ class Board {
 public:
 	Piece* Grid[8][8];
 	Board();
-	Piece* Getpiece();
+	Piece* Getpiece(Position);
 	void highlightmove();
 	void display();
 };
@@ -88,8 +88,8 @@ public:
 	void start();
 	Position FindKingLocation();
 	bool isCheckmate(Color color);
-	bool makeMove(Position to, Board& board);
-	bool castling(Position to, Board& board);
+	bool makeMove(Position to, Position from);
+	bool castling(Position to);
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
 	void switchTurn();
