@@ -87,7 +87,7 @@ public:
 	Player* p2;
 	Player* currentPlayer;
 	void start();
-	Position FindKingLocation();
+	Position FindKingLocation(Color color);
 	bool isCheckmate(Color color);
 	bool makeMove(Position to, Position from);
 	bool castling(Position to);
