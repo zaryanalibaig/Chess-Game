@@ -13,6 +13,8 @@ class Piece {
 public:
 	Position pos;
 	Color color;
+	bool isMoved = false;
+	int move = 0;
 	Piece(Position pos, Color color);
 	Piece();
 	virtual bool isValidmove(Position to, Board& board) = 0;
@@ -28,7 +30,7 @@ public:
 };
 class Rook :public Piece {
 public:
-	bool rookMoved;
+	bool rookMoved = false;
 	Rook(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -42,7 +44,7 @@ public:
 };
 class Pawn :public Piece {
 public:
-	bool isPromoted;
+	bool isPromoted = false;
 	Pawn(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -57,7 +59,7 @@ public:
 };
 class King :public Piece {
 public:
-	bool kingMoved;
+	
 	King(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -67,8 +69,7 @@ class Board {
 public:
 	Piece* Grid[8][8];
 	Board();
-	bool makeMove();
-	Piece* Getpiece();
+	Piece* Getpiece(Position);
 	void highlightmove();
 	void display();
 };
@@ -87,6 +88,8 @@ public:
 	void start();
 	Position FindKingLocation();
 	bool isCheckmate(Color color);
+	bool makeMove(Position to, Position from);
+	bool castling(Position to);
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
 	void switchTurn();

@@ -17,19 +17,41 @@ bool Pawn::isValidmove(Position to, Board& board)
 
 		if (to.row > pos.row)
 		{
-			if (row_diff == 1 && col_diff == 1 &&
-				board.Grid[to.row][to.col] != nullptr)
+			if (row_diff == 1 && col_diff == 1)
 			{
 				//Diagonal Movement of Pawn
-				if (board.Grid[to.row][to.col]->color == Black)
+				if (board.Grid[to.row][to.col] != nullptr &&
+					board.Grid[to.row][to.col]->color == Black)
 				{
+					move++;
 					return true;
 				}
-				else
-				{
-					return false;
-				}
 				//En Passant
+				else if (pos.row == 4 && board.Grid[to.row][to.col] == nullptr)
+				{
+					// Check which side the move is going toward
+					if (pos.col + 1 <= 7 &&
+						to.col == pos.col + 1 &&                          // moving toward right
+						board.Grid[4][pos.col + 1] != nullptr &&
+						board.Grid[4][pos.col + 1]->color == Black &&
+						board.Grid[4][pos.col + 1]->move == 1)
+					{
+						board.Grid[4][pos.col + 1] = nullptr;             // remove captured pawn
+						move++;
+						return true;
+					}
+					else if (pos.col - 1 >= 0 &&
+						to.col == pos.col - 1 &&                     // moving toward left
+						board.Grid[4][pos.col - 1] != nullptr &&
+						board.Grid[4][pos.col - 1]->color == Black &&
+						board.Grid[4][pos.col - 1]->move == 1)
+					{
+						board.Grid[4][pos.col - 1] = nullptr;             // remove captured pawn
+						move++;
+						return true;
+					}
+				}
+				return false;
 			}
 			else if (to.col == pos.col)
 			{
@@ -38,12 +60,14 @@ bool Pawn::isValidmove(Position to, Board& board)
 					board.Grid[2][to.col] == nullptr &&
 					board.Grid[3][to.col] == nullptr)
 				{
+					move++;
 					return true;
 				}
 				//Pawn Movement
 				else if (to.row == pos.row + 1 &&
 					board.Grid[to.row][to.col] == nullptr)
 				{
+					move++;
 					return true;
 				}
 				//Invalid Move
@@ -70,19 +94,42 @@ bool Pawn::isValidmove(Position to, Board& board)
 
 		if (to.row < pos.row)
 		{
-			if (row_diff == 1 && col_diff == 1 &&
-				board.Grid[to.row][to.col] != nullptr)
+			if (row_diff == 1 && col_diff == 1)
 			{
 				//Diagonal Movement of Pawn
-				if (board.Grid[to.row][to.col]->color == White)
+				if (board.Grid[to.row][to.col] != nullptr &&
+					board.Grid[to.row][to.col]->color == White)
 				{
+					move++;
 					return true;
 				}
-				else
-				{
-					return false;
-				}
 				//En Passant
+				else if (pos.row == 3 &&
+					board.Grid[to.row][to.col] == nullptr)  // landing square must be empty
+				{
+					// Check which side the move is going toward
+					if (pos.col + 1 <= 7 &&
+						to.col == pos.col + 1 &&                          // moving toward right
+						board.Grid[3][pos.col + 1] != nullptr &&
+						board.Grid[3][pos.col + 1]->color == White &&
+						board.Grid[3][pos.col + 1]->move == 1)
+					{
+						board.Grid[3][pos.col + 1] = nullptr;             // remove captured pawn
+						move++;
+						return true;
+					}
+					else if (pos.col - 1 >= 0 &&
+						to.col == pos.col - 1 &&                     // moving toward left
+						board.Grid[3][pos.col - 1] != nullptr &&
+						board.Grid[3][pos.col - 1]->color == White &&
+						board.Grid[3][pos.col - 1]->move == 1)
+					{
+						board.Grid[3][pos.col - 1] = nullptr;             // remove captured pawn
+						move++;
+						return true;
+					}
+				}
+				return false;
 			}
 			else if (to.col == pos.col)
 			{
@@ -91,12 +138,14 @@ bool Pawn::isValidmove(Position to, Board& board)
 					board.Grid[5][to.col] == nullptr &&
 					board.Grid[4][to.col] == nullptr)
 				{
+					move++;
 					return true;
 				}
 				//Pawn Movement
 				else if (to.row == pos.row - 1 &&
 					board.Grid[to.row][to.col] == nullptr)
 				{
+					move++;
 					return true;
 				}
 				//Invalid Move
