@@ -96,3 +96,13 @@ public:
 	Game();
 	~Game();
 };
+#include <windows.h>
+
+#define COLOR_WHITE_PIECE  11  // Bright Cyan
+#define COLOR_BLACK_PIECE  12  // Bright Red  
+#define COLOR_HIGHLIGHT    10  // Bright Green
+#define COLOR_SELECTED     14  // Yellow
+#define COLOR_RESET         7  // Default grey
+
+void setColor(int color);
+void resetColor();

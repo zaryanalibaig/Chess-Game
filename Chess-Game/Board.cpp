@@ -7,6 +7,7 @@ Board::Board() {
 			Grid[i][j] = nullptr;
 		}
 	}
+
 	// Making the Board 
 	// Making the first row for white
 	Grid[0][0] = new Rook({ 0,0 }, White);
@@ -48,6 +49,15 @@ Board::Board() {
 	Grid[6][7] = new Pawn({ 6,7 }, Black);
 
 }
+void setColor(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void resetColor()
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
 Piece* Board::Getpiece(Position pos) {
 	Piece* P = Grid[pos.row][pos.col];
 	return P;
@@ -59,11 +69,16 @@ void Board::display() {
 		for (int col = 0; col < 8; col++) {
 			if (Grid[row][col] != nullptr) {
 				char symbol = Grid[row][col]->getSymbol();
-				if (Grid[row][col]->color == White)
+				if (Grid[row][col]->color == White) {
+					setColor(COLOR_WHITE_PIECE);
 					symbol = toupper(symbol);
-				else
+				}
+				else {
+					setColor(COLOR_BLACK_PIECE);
 					symbol = tolower(symbol);
+				}
 				cout << " | " << symbol;
+				resetColor();
 			}
 			else {
 				cout << " | .";
@@ -94,18 +109,32 @@ void Board::highlightmove(Position pos) {
 			Position to = { row, col };
 
 			if (row == pos.row && col == pos.col) {
-				cout << " | X";          // selected the piece to move
+				cout << " | ";
+				setColor(COLOR_SELECTED);
+				cout << "X";          // selected the piece to move
+				resetColor();
 			}
 			else if (p->isValidmove(to, *this)) {
-				cout << " | *";          // valid move square
+				cout << " | ";
+				setColor(COLOR_HIGHLIGHT);
+				cout << "*";          // valid move square
+				resetColor();
 			}
 			else if (Grid[row][col] != nullptr) {
 				char symbol = Grid[row][col]->getSymbol();
-				if (Grid[row][col]->color == White)
+				if (Grid[row][col]->color == White) {
 					symbol = toupper(symbol);
-				else
+					cout << " | ";
+					setColor(COLOR_WHITE_PIECE);
+				}
+				else {
 					symbol = tolower(symbol);
-				cout << " | " << symbol;
+					cout << " | ";
+					setColor(COLOR_BLACK_PIECE);
+
+				}cout << symbol;
+				resetColor();
+
 			}
 			else {
 				cout << " | .";
