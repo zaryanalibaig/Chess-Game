@@ -19,7 +19,7 @@ Board::Board() {
 	Grid[0][7] = new Rook({ 0,7 }, White);
 
 	// Initializing the pawn pieces
-	
+
 	Grid[1][0] = new Pawn({ 1,0 }, White);
 	Grid[1][1] = new Pawn({ 1,1 }, White);
 	Grid[1][2] = new Pawn({ 1,2 }, White);
@@ -74,9 +74,13 @@ void Board::display() {
 		cout << "\n  ---------------------------------\n";
 
 	}
-	cout << "   a   b   c   d   e   f   g   h\n\n";
+	cout << "    a   b   c   d   e   f   g   h\n\n";
 }
 void Board::highlightmove(Position pos) {
+	if (pos.row < 0 || pos.row >= 8 || pos.col < 0 || pos.col >= 8) {
+		cout << "Invalid board position!\n";
+		return;
+	}
 	Piece* p = Grid[pos.row][pos.col];
 
 	if (p == nullptr) {
@@ -88,6 +92,7 @@ void Board::highlightmove(Position pos) {
 		cout << row + 1;
 		for (int col = 0; col < 8; col++) {
 			Position to = { row, col };
+
 			if (row == pos.row && col == pos.col) {
 				cout << " | X";          // selected the piece to move
 			}
@@ -96,14 +101,14 @@ void Board::highlightmove(Position pos) {
 			}
 			else if (Grid[row][col] != nullptr) {
 				char symbol = Grid[row][col]->getSymbol();
-				if (Grid[row][col]->color == White) 
+				if (Grid[row][col]->color == White)
 					symbol = toupper(symbol);
-				else  
+				else
 					symbol = tolower(symbol);
 				cout << " | " << symbol;
 			}
 			else {
-				cout  << " | .";
+				cout << " | .";
 				// empty square where there is nullptr
 			}
 		}
@@ -111,5 +116,5 @@ void Board::highlightmove(Position pos) {
 		cout << "\n  ---------------------------------\n";
 
 	}
-	cout << "   a   b   c   d   e   f   g   h\n\n";
+	cout << "    a   b   c   d   e   f   g   h\n\n";
 }

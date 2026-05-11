@@ -44,7 +44,6 @@ public:
 };
 class Pawn :public Piece {
 public:
-	bool isPromoted = false;
 	Pawn(Position pos, Color color);
 	bool isValidmove(Position to, Board& board) override;
 	char getSymbol() override;
@@ -69,7 +68,6 @@ class Board {
 public:
 	Piece* Grid[8][8];
 	Board();
-	bool makeMove(Position to,Position from);
 	Piece* Getpiece(Position);
 	void highlightmove(Position);
 	void display();
@@ -90,7 +88,8 @@ public:
 	Position FindKingLocation(Color color);
 	bool isCheckmate(Color color);
 	bool makeMove(Position to, Position from);
-	bool castling(Position to);
+	bool castleKingSide(Color color, Position to);
+	bool castleQueenSide(Color color, Position to);
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
 	void switchTurn();
