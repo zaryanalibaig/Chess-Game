@@ -60,7 +60,7 @@ bool Game::makeMove(Position to, Position from)
 			else
 				row = to.row + 1;
 
-			if (to.col != from.col && board.Grid[row][to.col] != nullptr)
+			if (to.col != from.col && board.Grid[row][to.col] != nullptr && piece->getSymbol() == 'p')
 			{
 				delete board.Grid[row][to.col];
 				board.Grid[row][to.col] = nullptr;
