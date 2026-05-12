@@ -212,9 +212,9 @@ void Game::start() {
 bool Game::isinCheck(Color color)
 {
 	Position P = Game::FindKingLocation(color);
-	for (int i = 0; i <= 7; i++)
+	for (int i = 0; i < 8; i++)
 	{
-		for (int j = 0; j <= 7; j++)
+		for (int j = 0; j < 8; j++)
 		{
 			if (board.Grid[i][j] != nullptr)
 			{
@@ -292,9 +292,9 @@ bool Game::canEscape(Color color) {
 //Finds King Location on the board
 Position Game::FindKingLocation(Color color)
 {
-	for (int i = 0; i <= 7; i++)
+	for (int i = 0; i < 8 ; i++)
 	{
-		for (int j = 0; j <= 7; j++)
+		for (int j = 0; j < 8 ; j++)
 		{
 			if (board.Grid[i][j] != nullptr)
 			{
