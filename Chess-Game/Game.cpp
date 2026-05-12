@@ -2,6 +2,11 @@
 #include<iostream>
 #include<cstring>
 
+//For Sound
+#include<Windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+
 //Player Class Constructor
 Player::Player(string name, Color color) {
 	this->name = name;
@@ -40,11 +45,13 @@ bool Game::makeMove(Position to, Position from)
 	Piece* piece = board.Getpiece(from);
 	if (piece == nullptr) {
 		cout << "No piece at that place\n";
+	
 	}
 	//Castling Condition
 	if (castleKingSide(piece->color,to) ||
 		castleQueenSide(piece->color, to))
 	{
+		PlaySound(TEXT("castle.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		return true;
 	}
 
@@ -69,12 +76,18 @@ bool Game::makeMove(Position to, Position from)
 				board.Grid[row][to.col] = nullptr;
 			}
 
+			//Sound Effect
+			PlaySound(TEXT("Placing.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
 			board.Grid[to.row][to.col] = board.Grid[from.row][from.col];
 			piece->pos = to;
 			board.Grid[from.row][from.col] = nullptr;
 		}
 		else
 		{
+			//Sound Effect
+			PlaySound(TEXT("move-check.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
 			delete board.Grid[to.row][to.col];
 			piece->pos = to;
 			board.Grid[to.row][to.col] = board.Grid[from.row][from.col];
@@ -149,15 +162,15 @@ void Game::start() {
 		cout << endl;
 
 		cout << "Select the piece to move (Like e4): ";
-		cin.getline(arr,3);
+		cin.getline(arr, 3);
 
 		//Conversion of Column(Alphabet) to respective integer 
 		arr[0] = tolower(arr[0]);
 		arr[0] = arr[0] - 'a';
-		from.row = arr[1]-'0' - 1;;
+		from.row = arr[1] - '0' - 1;;
 
 		//Validation
-		while (arr[0] > 7 || from.row>7)
+		while (arr[0] > 7 || from.row > 7)
 		{
 			cout << "Enter again : ";
 			cin.getline(arr, 3);
@@ -171,17 +184,21 @@ void Game::start() {
 			cout << "That piece is not your's " << endl;
 			continue;
 		}
+		if (board.Grid[from.row][from.col] == nullptr) {
+			cout << "No piece at that position\n";
+			continue;
+		}
 		//Displays '*' on path of a Piece
 		board.highlightmove(from);
 		cout << "Select the destination (Like e4): ";
 		cin.getline(arr1, 3);
-		
+
 		//Conversion of Column(Alphabet) to respected integer 
 		arr1[0] = tolower(arr1[0]);
 		arr1[0] = arr1[0] - 'a';
 		to.row = arr1[1] - '0' - 1;
 		//Validation
-		while (arr1[0] > 7 || to.row> 7)
+		while (arr1[0] > 7 || to.row > 7)
 		{
 			cout << "Enter again : ";
 			cin.getline(arr1, 3);
@@ -226,19 +243,22 @@ void Game::start() {
 				continue;
 
 			}
-			else 
+			else
 			{
 				switchTurn();
 				if (isCheckmate(currentPlayer->color))
 				{
+
 					board.display();
-					cout  << currentPlayer->name << " lost \n";
+					cout << currentPlayer->name << " lost \n";
 					break;
 				}
 			}
 		}
-		else
+		else {
 			cout << "Invalid Move\n";
+			continue;
+		}
 	}
 }
 
