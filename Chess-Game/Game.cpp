@@ -8,7 +8,7 @@ Player::Player(string name, Color color) {
 	this->color = color;
 }
 //Game Class Implementation
-
+ 
 //Constructor
 Game::Game() {
 	string name;
@@ -166,6 +166,11 @@ void Game::start() {
 
 		}
 		from.col = arr[0];
+		if (board.Grid[from.row][from.col] != nullptr &&
+			board.Grid[from.row][from.col]->color != currentPlayer->color) {
+			cout << "That piece is not your's " << endl;
+			continue;
+		}
 		//Displays '*' on path of a Piece
 		board.highlightmove(from);
 		cout << "Select the destination (Like e4): ";
@@ -185,6 +190,14 @@ void Game::start() {
 		}
 
 		to.col = arr1[0];
+		// Bounds check before saving state
+		if (from.row < 0 || from.row >= 8 || from.col < 0 || from.col >= 8 ||
+			to.row < 0 || to.row >= 8 || to.col < 0 || to.col >= 8)
+		{
+			cout << "Invalid board position!\n";
+			continue;
+		}
+
 		// --- Save board state Before move for undo 
 		Piece* movingPiece = board.Grid[from.row][from.col];
 		Piece* capturedPiece = board.Grid[to.row][to.col];
@@ -209,7 +222,7 @@ void Game::start() {
 					board.Grid[from.row][from.col]->move = prevMoveCount;
 				}
 
-				cout << "Invalid move: your king would be exposed!\n";
+				cout << "Invalid move: your king will be exposed !\n";
 				continue;
 
 			}
