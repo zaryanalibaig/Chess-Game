@@ -89,11 +89,13 @@ bool Game::makeMove(Position to, Position from)
 			cout << "1. Queen\n2. Rook\n3. Knight\n4. Bishop\n";
 			cout << "Enter your Choice: ";
 			cin >> ch;
+			cin.ignore();
 
-			while (ch < 0 || ch>4)
+			while (ch < 1 || ch>4)
 			{
 				cout << "Invalid Choice! Enter b/w 1 - 4: ";
 				cin >> ch;
+				cin.ignore();
 			}
 
 			delete piece;
@@ -115,6 +117,8 @@ bool Game::makeMove(Position to, Position from)
 			{
 				piece = new Bishop(to, color);
 			}
+
+			board.Grid[to.row][to.col] = piece;
 			
 		}
 		return true;
