@@ -36,11 +36,14 @@ bool Game::makeMove(Position to, Position from)
 		cout << "Invalid board position!\n";
 		return false;
 	}
+	
 	Piece* piece = board.Getpiece(from);
-
+	if (piece == nullptr) {
+		cout << "No piece at that place\n";
+	}
 	//Castling Condition
-	if (castleKingSide(board.Grid[from.row][from.col]->color,to) ||
-		castleQueenSide(board.Grid[from.row][from.col]->color, to))
+	if (castleKingSide(piece->color,to) ||
+		castleQueenSide(piece->color, to))
 	{
 		return true;
 	}
@@ -182,23 +185,41 @@ void Game::start() {
 		}
 
 		to.col = arr1[0];
+		// --- Save board state Before move for undo 
+		Piece* movingPiece = board.Grid[from.row][from.col];
+		Piece* capturedPiece = board.Grid[to.row][to.col];
+		bool   wasMoved = movingPiece ? movingPiece->isMoved : false;
+		int    prevMoveCount = movingPiece ? movingPiece->move : 0;
 
 		bool a = makeMove(to, from);
 
-		//Swith Turn
 		if (a)
 		{
+			// Check if OUR OWN king is now exposed after the move
 			if (isinCheck(currentPlayer->color))
 			{
-				cout << "Your king will be exposed \n";
+				// --- UNDO the move ---
+				board.Grid[from.row][from.col] = board.Grid[to.row][to.col];
+				board.Grid[to.row][to.col] = capturedPiece;
+
+				if (board.Grid[from.row][from.col])
+				{
+					board.Grid[from.row][from.col]->pos = from;
+					board.Grid[from.row][from.col]->isMoved = wasMoved;
+					board.Grid[from.row][from.col]->move = prevMoveCount;
+				}
+
+				cout << "Invalid move: your king would be exposed!\n";
 				continue;
+
 			}
 			else 
 			{
 				switchTurn();
 				if (isCheckmate(currentPlayer->color))
 				{
-					cout << currentPlayer->name << " lost \n";
+					board.display();
+					cout  << currentPlayer->name << " lost \n";
 					break;
 				}
 			}
