@@ -93,6 +93,8 @@ public:
 	bool isinCheck(Color color);
 	bool canEscape(Color color);
 	void switchTurn();
+	bool isStalemate(Color color);
+	void getSafeline(string);
 	Game();
 	~Game();
 };
