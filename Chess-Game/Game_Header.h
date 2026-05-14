@@ -72,6 +72,7 @@ public:
 	Piece* Getpiece(Position);
 	void highlightmove(Position);
 	void display();
+	~Board();
 };
 class Player {
 public:

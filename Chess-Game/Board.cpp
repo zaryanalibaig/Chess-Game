@@ -147,3 +147,13 @@ void Board::highlightmove(Position pos) {
 	}
 	cout << "    a   b   c   d   e   f   g   h\n\n";
 }
+Board::~Board() {
+	for (int i = 0;i < 8;i++) {
+		for (int j = 0;j < 8;j++) {
+			if (Grid[i][j] != nullptr) {
+				delete Grid[i][j];
+				Grid[i][j] = nullptr;
+			}
+		}
+	}
+}
