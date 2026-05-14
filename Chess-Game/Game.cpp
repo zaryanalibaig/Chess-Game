@@ -1,7 +1,8 @@
 #include"Game_Header.h"
 #include<iostream>
 #include<cstring>
-
+#include<exception>
+#include<stdexcept>
 //For Sound
 #include<Windows.h>
 #include <mmsystem.h>
@@ -13,13 +14,13 @@ Player::Player(string name, Color color) {
 	this->color = color;
 }
 //Game Class Implementation
- 
+
 //Constructor
 Game::Game() {
 	string name;
 	cout << "Player Name with White pieces : ";
 	getline(cin, name);
-	p1 = new Player(name,White);
+	p1 = new Player(name, White);
 	cout << "Player Name with black pieces : ";
 	getline(cin, name);
 	p2 = new Player(name, Black);
@@ -41,14 +42,14 @@ bool Game::makeMove(Position to, Position from)
 		cout << "Invalid board position!\n";
 		return false;
 	}
-	
+
 	Piece* piece = board.Getpiece(from);
 	if (piece == nullptr) {
 		cout << "No piece at that place\n";
-	
+		return false;
 	}
 	//Castling Condition
-	if (castleKingSide(piece->color,to) ||
+	if (castleKingSide(piece->color, to) ||
 		castleQueenSide(piece->color, to))
 	{
 		PlaySound(TEXT("castle.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -88,68 +89,85 @@ bool Game::makeMove(Position to, Position from)
 			//Sound Effect
 			PlaySound(TEXT("move-check.wav"), NULL, SND_FILENAME | SND_ASYNC);
 
-			delete board.Grid[to.row][to.col];
 			piece->pos = to;
 			board.Grid[to.row][to.col] = board.Grid[from.row][from.col];
 			board.Grid[from.row][from.col] = nullptr;
 		}
 
 		//Pawn Promotion
-
-		if (piece->getSymbol() == 'p' && (piece->pos.row == 0 || piece->pos.row==7))
-		{
-			int ch;
-			Color color = piece->color;
-
-			cout << "\n----- Pawn Promotion -----\n";
-			cout << "1. Queen\n2. Rook\n3. Knight\n4. Bishop\n";
-			cout << "Enter your Choice: ";
-			cin >> ch;
-			cin.ignore();
-
-			while (ch < 1 || ch>4)
+		try{
+			if (piece->getSymbol() == 'p' && (piece->pos.row == 0 || piece->pos.row == 7))
 			{
-				cout << "Invalid Choice! Enter b/w 1 - 4: ";
+				int ch;
+				Color color = piece->color;
+
+				cout << "\n----- Pawn Promotion -----\n";
+				cout << "1. Queen\n2. Rook\n3. Knight\n4. Bishop\n";
+				cout << "Enter your Choice: ";
 				cin >> ch;
+				if (cin.fail() ) {
+					throw invalid_argument("Wrong input.Enter integer ");
+				}
+				while (ch <= 0 || ch > 4) {
+					cout << "Enter again : ";
+					cin >> ch;
+					if (cin.fail()) {
+						throw invalid_argument("Wrong input Only Integer are allowed\n");
+					}
+				}
+
+				delete piece;
+				piece = nullptr;
+				board.Grid[to.row][to.col] = nullptr;
+				if (ch == 1)
+				{
+					piece = new Queen(to, color);
+				}
+				else if (ch == 2)
+				{
+					piece = new Rook(to, color);
+				}
+				else if (ch == 3)
+				{
+					piece = new Knight(to, color);
+				}
+				else
+				{
+					piece = new Bishop(to, color);
+				}
+
+				board.Grid[to.row][to.col] = piece;
 				cin.ignore();
 			}
-
-			delete piece;
-			piece = nullptr;
-			
-			if (ch == 1)
-			{
-				piece = new Queen(to, color);
-			}
-			else if (ch == 2)
-			{
-				piece = new Rook(to, color);
-			}
-			else if (ch == 3)
-			{
-				piece = new Knight(to, color);
-			}
-			else
-			{
-				piece = new Bishop(to, color);
-			}
-
-			board.Grid[to.row][to.col] = piece;
-			
+		}
+		catch (exception&e) {
+			cout << e.what();
+			cin.clear();
+			cin.ignore(1000,'\n');
+			return false;
 		}
 		return true;
 	}
 	else
 	{
-
 		return false;
 	}
 }
-
+void Game::getSafeline(string a) {
+	if (a.length() != 2) {
+		throw invalid_argument("Input too long Must be less than two");
+	}
+	else if (a[0] < 'a' || a[0]>'h') {
+		throw invalid_argument("Wrong column input");
+	}
+	else if (a[1] < '1' || a[1]>'8') {
+		throw invalid_argument("Wrong row input");
+	}
+}
 //Strt Function - Starts Game
 void Game::start() {
-	Position to, from;
-	char arr[3],arr1[3];
+	Position to = { 0,0 }, from;
+	string arr, arr1;
 	//For Gameplay - Till Checkmate
 	while (true)
 	{
@@ -160,66 +178,49 @@ void Game::start() {
 		(currentPlayer->color == White) ?
 			cout << "White\n" : cout << "Black\n";
 		cout << endl;
-
-		cout << "Select the piece to move (Like e4): ";
-		cin.getline(arr, 3);
-
-		//Conversion of Column(Alphabet) to respective integer 
-		arr[0] = tolower(arr[0]);
-		arr[0] = arr[0] - 'a';
-		from.row = arr[1] - '0' - 1;;
-
-		//Validation
-		while (arr[0] > 7 || from.row > 7)
-		{
-			cout << "Enter again : ";
-			cin.getline(arr, 3);
+		try {
+			cout << "Select the piece to move (Like e4): ";
+			cin>>arr;
+			getSafeline(arr);
+			//Conversion of Column(Alphabet) to respective integer 
+			arr[0] = tolower(arr[0]);
 			arr[0] = arr[0] - 'a';
-			from.row = arr[1] - '0' - 1;
+			from.row = arr[1] - '0' - 1;;
+			from.col = arr[0];
+			
+			if (board.Grid[from.row][from.col] == nullptr) {
+				cout << "No piece at that position\n";
+				continue;
+			}
+			if (board.Grid[from.row][from.col] != nullptr &&
+				board.Grid[from.row][from.col]->color != currentPlayer->color) {
+				cout << "That piece is not your's " << endl;
+				continue;
+			}
+			//Displays '*' on path of a Piece
+			board.highlightmove(from);
+			cout << "Select the destination (Like e4): ";
+			cin >> arr1;
+			getSafeline(arr1);
 
-		}
-		from.col = arr[0];
-		if (board.Grid[from.row][from.col] != nullptr &&
-			board.Grid[from.row][from.col]->color != currentPlayer->color) {
-			cout << "That piece is not your's " << endl;
-			continue;
-		}
-		if (board.Grid[from.row][from.col] == nullptr) {
-			cout << "No piece at that position\n";
-			continue;
-		}
-		//Displays '*' on path of a Piece
-		board.highlightmove(from);
-		cout << "Select the destination (Like e4): ";
-		cin.getline(arr1, 3);
-
-		//Conversion of Column(Alphabet) to respected integer 
-		arr1[0] = tolower(arr1[0]);
-		arr1[0] = arr1[0] - 'a';
-		to.row = arr1[1] - '0' - 1;
-		//Validation
-		while (arr1[0] > 7 || to.row > 7)
-		{
-			cout << "Enter again : ";
-			cin.getline(arr1, 3);
+			//Conversion of Column(Alphabet) to respected integer 
+			arr1[0] = tolower(arr1[0]);
 			arr1[0] = arr1[0] - 'a';
 			to.row = arr1[1] - '0' - 1;
+			to.col = arr1[0];
+	
 		}
-
-		to.col = arr1[0];
-		// Bounds check before saving state
-		if (from.row < 0 || from.row >= 8 || from.col < 0 || from.col >= 8 ||
-			to.row < 0 || to.row >= 8 || to.col < 0 || to.col >= 8)
-		{
-			cout << "Invalid board position!\n";
+		catch (const std::invalid_argument& e) {
+			cout << "Invalid input " << e.what() << endl;
 			continue;
 		}
 
 		// --- Save board state Before move for undo 
 		Piece* movingPiece = board.Grid[from.row][from.col];
 		Piece* capturedPiece = board.Grid[to.row][to.col];
-		bool   wasMoved = movingPiece ? movingPiece->isMoved : false;
-		int    prevMoveCount = movingPiece ? movingPiece->move : 0;
+		bool wasMoved = movingPiece ? movingPiece->isMoved : false;
+		int prevMoveCount = movingPiece ? movingPiece->move : 0;
+		Position oldPos = movingPiece ? movingPiece->pos : from;
 
 		bool a = makeMove(to, from);
 
@@ -239,12 +240,14 @@ void Game::start() {
 					board.Grid[from.row][from.col]->move = prevMoveCount;
 				}
 
-				cout << "Invalid move: your king will be exposed !\n";
+				cout << "Invalid move: your king is in check or will be exposed !\n";
 				continue;
 
 			}
 			else
 			{
+				delete capturedPiece;
+				capturedPiece = nullptr;
 				switchTurn();
 				if (isCheckmate(currentPlayer->color))
 				{
@@ -252,6 +255,16 @@ void Game::start() {
 					board.display();
 					cout << currentPlayer->name << " lost \n";
 					break;
+				}
+				else if (!isinCheck(currentPlayer->color)) {
+					if (isStalemate(currentPlayer->color)) {
+						board.display();
+						cout << "Stalemate Happened \n Game over ";
+						break;
+					}
+				}
+				else if (isinCheck(currentPlayer->color)) {
+					cout << currentPlayer->name << " is in check\n";
 				}
 			}
 		}
@@ -261,7 +274,29 @@ void Game::start() {
 		}
 	}
 }
+// Stalemate added when a side doesnot have a legal move and is not in check
+bool Game::isStalemate(Color color) {
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			Position from = { i,j };
+			Piece* piece = board.Grid[i][j];
+			if (board.Grid[i][j] == nullptr ||
+				board.Getpiece(from)->color != color) {
+				continue;
+			}
+			for (int k = 0; k < 8; k++) {
+				for (int m = 0; m < 8; m++) {
+					Position to = { k,m };
+					if (piece->isValidmove(to, board)) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
 
+}
 //Check Function - Whether King is in Check or not
 bool Game::isinCheck(Color color)
 {
@@ -306,7 +341,7 @@ bool Game::canEscape(Color color) {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			Piece* p = board.Getpiece({ i, j });
-			if (p == nullptr || p->color != color) 
+			if (p == nullptr || p->color != color)
 				continue;
 
 			for (int r = 0; r < 8; r++) {
@@ -422,7 +457,7 @@ bool Game::castleKingSide(Color color, Position to)
 				}
 			}
 		}
-		
+
 		board.Grid[0][6] = board.Grid[0][4];		//King Movement
 		board.Grid[0][5] = board.Grid[0][7];		//Rook Movement
 
