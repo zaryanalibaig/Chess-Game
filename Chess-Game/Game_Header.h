@@ -15,6 +15,7 @@ public:
 	Color color;
 	bool isMoved = false;
 	int move = 0;
+	bool enPassant_allowed = false;
 	Piece(Position pos, Color color);
 	Piece();
 	virtual bool isValidmove(Position to, Board& board) = 0;

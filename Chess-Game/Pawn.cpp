@@ -24,6 +24,7 @@ bool Pawn::isValidmove(Position to, Board& board)
 				if (board.Grid[to.row][to.col] != nullptr &&
 					board.Grid[to.row][to.col]->color == Black)
 				{
+					enPassant_allowed = false;
 					return true;
 				}
 				//En Passant
@@ -34,7 +35,8 @@ bool Pawn::isValidmove(Position to, Board& board)
 						to.col == pos.col + 1 &&                          // moving toward right
 						board.Grid[4][pos.col + 1] != nullptr &&
 						board.Grid[4][pos.col + 1]->color == Black &&
-						board.Grid[4][pos.col + 1]->move == 1)
+						board.Grid[4][pos.col + 1]->move == 1 &&
+						board.Grid[4][pos.col + 1]->enPassant_allowed)
 					{
 						return true;
 					}
@@ -42,7 +44,8 @@ bool Pawn::isValidmove(Position to, Board& board)
 						to.col == pos.col - 1 &&                     // moving toward left
 						board.Grid[4][pos.col - 1] != nullptr &&
 						board.Grid[4][pos.col - 1]->color == Black &&
-						board.Grid[4][pos.col - 1]->move == 1)
+						board.Grid[4][pos.col - 1]->move == 1 &&
+						board.Grid[4][pos.col - 1]->enPassant_allowed)
 					{
 						return true;
 					}
@@ -56,12 +59,18 @@ bool Pawn::isValidmove(Position to, Board& board)
 					board.Grid[2][to.col] == nullptr &&
 					board.Grid[3][to.col] == nullptr)
 				{
+					if ((board.Grid[to.row][to.col + 1] != nullptr && board.Grid[to.row][to.col + 1]->color == Black) ||
+						(board.Grid[to.row][to.col - 1] != nullptr && board.Grid[to.row][to.col -1]->color == Black))
+					{
+						enPassant_allowed = true;
+					}
 					return true;
 				}
 				//Pawn Movement
 				else if (to.row == pos.row + 1 &&
 					board.Grid[to.row][to.col] == nullptr)
 				{
+					enPassant_allowed = false;
 					return true;
 				}
 				//Invalid Move
@@ -95,6 +104,7 @@ bool Pawn::isValidmove(Position to, Board& board)
 				if (board.Grid[to.row][to.col] != nullptr &&
 					board.Grid[to.row][to.col]->color == White)
 				{
+					enPassant_allowed = false;
 					return true;
 				}
 				//En Passant
@@ -106,7 +116,8 @@ bool Pawn::isValidmove(Position to, Board& board)
 						to.col == pos.col + 1 &&                          // moving toward right
 						board.Grid[3][pos.col + 1] != nullptr &&
 						board.Grid[3][pos.col + 1]->color == White &&
-						board.Grid[3][pos.col + 1]->move == 1)
+						board.Grid[3][pos.col + 1]->move == 1 &&
+						board.Grid[3][pos.col + 1]->enPassant_allowed)
 					{
 						return true;
 					}
@@ -114,7 +125,8 @@ bool Pawn::isValidmove(Position to, Board& board)
 						to.col == pos.col - 1 &&                     // moving toward left
 						board.Grid[3][pos.col - 1] != nullptr &&
 						board.Grid[3][pos.col - 1]->color == White &&
-						board.Grid[3][pos.col - 1]->move == 1)
+						board.Grid[3][pos.col - 1]->move == 1 &&
+						board.Grid[3][pos.col - 1]->enPassant_allowed)
 					{
 						return true;
 					}
@@ -128,12 +140,18 @@ bool Pawn::isValidmove(Position to, Board& board)
 					board.Grid[5][to.col] == nullptr &&
 					board.Grid[4][to.col] == nullptr)
 				{
+					if ((board.Grid[to.row][to.col + 1] != nullptr && board.Grid[to.row][to.col + 1]->color == White) ||
+						(board.Grid[to.row][to.col - 1] != nullptr && board.Grid[to.row][to.col - 1]->color == White))
+					{
+						enPassant_allowed = true;
+					}
 					return true;
 				}
 				//Pawn Movement
 				else if (to.row == pos.row - 1 &&
 					board.Grid[to.row][to.col] == nullptr)
 				{
+					enPassant_allowed = false;
 					return true;
 				}
 				//Invalid Move
